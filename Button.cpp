@@ -22,7 +22,7 @@ bool Button::update() {
 bool Button::debounceButton(bool state) {
   bool stateNow = digitalRead(pin);
   if(state!=stateNow) {
-    delay(10);
+    delay(50);
     stateNow = digitalRead(pin);
   }
   
