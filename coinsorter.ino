@@ -1,8 +1,8 @@
 #include "Coin.h"
+#include "Button.h"
 #include <LiquidCrystal.h>
 
-const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
-LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 #define COIN_PIN_1 A0
 #define COIN_PIN_2 A1
@@ -16,6 +16,7 @@ Coin coin2(COIN_PIN_2);
 Coin coin3(COIN_PIN_3);
 Coin coin4(COIN_PIN_4);
 Coin coin5(COIN_PIN_5);
+Button button(BUTTON_PIN);
 
 int besKurus = 0;
 int onKurus = 0;
@@ -23,7 +24,6 @@ int yirmiBesKurus = 0;
 int elliKurus = 0;
 int birLira = 0;
 int n = 0;
-bool buttonState = LOW; 
 
 void setup() {
   Serial.begin(9600);
@@ -36,12 +36,9 @@ void loop() {
   int yirmiBesKurusVal = coin3.readValue();
   int elliKurusVal = coin4.readValue();
   int birLiraVal = coin5.readValue();
-  
-  if(debounceButton(buttonState) == HIGH && buttonState == LOW){
+
+  if (button.isPressed()){
     n++;
-    buttonState = HIGH;
-  } else if(debounceButton(buttonState) == LOW && buttonState == HIGH){
-    buttonState = LOW;
   }
   
   n = (n == 6) ? 0 : n;
@@ -92,14 +89,4 @@ void updateDisplay(int val, int type) {
     lcd.print(" kurus: ");
    }
    lcd.print(val);
-}
-
-boolean debounceButton(boolean state) {
-  boolean stateNow = digitalRead(BUTTON_PIN);
-  if(state!=stateNow)
-  {
-    delay(10);
-    stateNow = digitalRead(BUTTON_PIN);
-  }
-  return stateNow; 
 }
