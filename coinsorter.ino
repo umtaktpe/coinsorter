@@ -99,29 +99,12 @@ void loop() {
       updateDisplay(EEPROM.read(4), 1);
       break;
     default:
-      lcd.clear();
-      lcd.setCursor(0,0);
-      lcd.print("   Para Sayici");
-      lcd.setCursor(0,1);
-      lcd.print("   Toplam: ");
       int toplam = besKurus + onKurus + yirmiBesKurus + elliKurus + birLira;
-      lcd.print(toplam);
+      displayMenu("   Para Sayici", "   Toplam: " + String(toplam));
       break;
   }
   
   delay(100);
-}
-
-void updateDisplay(int val, int type) {
-  lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.print(type);
-  if (type == 1) {
-    lcd.print(" lira: ");
-  } else {
-    lcd.print(" kurus: ");
-  }
-  lcd.print(val);
 }
 
 void menu() { 
@@ -137,132 +120,67 @@ void menu() {
     }
 
     if (y == 0) {
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print(" --Secenekler--");
-      lcd.setCursor(0, 1);
-      lcd.print(menuItem[0]);
+      displayMenu(" --Secenekler--", menuItem[0]);
     }
     
     if (y == 1) {
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print(">");
-      lcd.print(menuItem[0]);
-      lcd.setCursor(0, 1);
-      lcd.print(menuItem[1]);
+      displayMenu(String(">") + menuItem[0], menuItem[1]);
       if (button3.isPressed()) {
         EEPROM.write(0, 0);
-        lcd.clear();
-        lcd.setCursor(0,0);
-        lcd.print("     5kurus");
-        lcd.setCursor(0,1);
-        lcd.print("   sifirlandi");
+        displayMenu("     5kurus", "   sifirlandi");
         delay(2000);
       }
     }
 
     if (y == 2) {
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print(">");
-      lcd.print(menuItem[1]);
-      lcd.setCursor(0, 1);
-      lcd.print(menuItem[2]);
+      displayMenu(String(">") + menuItem[1], menuItem[2]);
       if (button3.isPressed()) {
         EEPROM.write(1, 0);
-        lcd.clear();
-        lcd.setCursor(0,0);
-        lcd.print("     10kurus");
-        lcd.setCursor(0,1);
-        lcd.print("   sifirlandi");
+        displayMenu("     10kurus", "   sifirlandi");
         delay(2000);
       }
     }
 
     if (y == 3) {
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print(">");
-      lcd.print(menuItem[2]);
-      lcd.setCursor(0, 1);
-      lcd.print(menuItem[3]);
+      displayMenu(String(">") + menuItem[2], menuItem[3]);
       if (button3.isPressed()) {
         EEPROM.write(2, 0);
-        lcd.clear();
-        lcd.setCursor(0,0);
-        lcd.print("     25kurus");
-        lcd.setCursor(0,1);
-        lcd.print("   sifirlandi");
+        displayMenu("     25kurus", "   sifirlandi");
         delay(2000);
       }
     }
 
     if (y == 4) {
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print(">");
-      lcd.print(menuItem[3]);
-      lcd.setCursor(0, 1);
-      lcd.print(menuItem[4]);
+      displayMenu(String(">") + menuItem[3], menuItem[4]);
       if (button3.isPressed()) {
         EEPROM.write(3, 0);
-        lcd.clear();
-        lcd.setCursor(0,0);
-        lcd.print("     50kurus");
-        lcd.setCursor(0,1);
-        lcd.print("   sifirlandi");
+        displayMenu("     50kurus", "   sifirlandi");
         delay(2000);
       }
     }
 
     if (y == 5) {
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print(">");
-      lcd.print(menuItem[4]);
-      lcd.setCursor(0, 1);
-      lcd.print(menuItem[5]);
+      displayMenu(String(">") + menuItem[4], menuItem[5]);
       if (button3.isPressed()) {
         EEPROM.write(4, 0);
-        lcd.clear();
-        lcd.setCursor(0,0);
-        lcd.print("     1 lira");
-        lcd.setCursor(0,1);
-        lcd.print("   sifirlandi");
+        displayMenu("     1 lira", "   sifirlandi");
         delay(2000);
       }
     }
 
     if (y == 6) {
-      lcd.clear();
-      lcd.setCursor(0, 0); 
-      lcd.print(">");
-      lcd.print(menuItem[5]);
-      lcd.setCursor(0, 1);
-      lcd.print(menuItem[6]);
+      displayMenu(String(">") + menuItem[5], menuItem[6]);
       if (button3.isPressed()) {
-        EEPROM.write(0, 0);
-        EEPROM.write(1, 0);
-        EEPROM.write(2, 0);
-        EEPROM.write(3, 0);
-        EEPROM.write(4, 0);
-        lcd.clear();
-        lcd.setCursor(0,0);
-        lcd.print("  Tum paralar");
-        lcd.setCursor(0,1);
-        lcd.print("   sifirlandi");
+        for (int x = 0; x < 5; x++) {
+          EEPROM.write(x, 0);
+        }
+        displayMenu("  Tum paralar", "   sifirlandi");
         delay(2000);
       }
     }
 
     if (y == 7) {
-      lcd.clear();
-      lcd.setCursor(0, 0); 
-      lcd.print(menuItem[5]);
-      lcd.setCursor(0, 1);
-      lcd.print(">");
-      lcd.print(menuItem[6]);
+      displayMenu(menuItem[5], String(">") + menuItem[6]);
       if (button3.isPressed()) {
         m = -2;
       }
@@ -272,4 +190,24 @@ void menu() {
      y = (y == -1) ? 0 : y;
      delay(100);
     }
+}
+
+void updateDisplay(int val, int type) {
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print(type);
+  if (type == 1) {
+    lcd.print(" lira: ");
+  } else {
+    lcd.print(" kurus: ");
+  }
+  lcd.print(val);
+}
+
+void displayMenu(String text1, String text2) {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print(text1);
+  lcd.setCursor(0, 1);
+  lcd.print(text2);
 }
