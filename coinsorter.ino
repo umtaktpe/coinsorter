@@ -1,6 +1,8 @@
 #include "Coin.h"
 #include "Button.h"
+#include <EEPROM.h>
 #include <LiquidCrystal.h>
+#include <String.h>
 
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
@@ -11,6 +13,7 @@ LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 #define COIN_PIN_5 A4
 #define BUTTON1_PIN 7
 #define BUTTON2_PIN 8
+#define BUTTON3_PIN 9
 
 Coin coin1(COIN_PIN_1);
 Coin coin2(COIN_PIN_2);
@@ -20,6 +23,7 @@ Coin coin5(COIN_PIN_5);
 
 Button button1(BUTTON1_PIN);
 Button button2(BUTTON2_PIN);
+Button button3(BUTTON3_PIN);
 
 int besKurus = 0;
 int onKurus = 0;
@@ -27,6 +31,16 @@ int yirmiBesKurus = 0;
 int elliKurus = 0;
 int birLira = 0;
 int n = 0;
+int addr = 0;
+String menuItem[7] = {
+  "5 kurus sifirla",
+  "10kurus sifirla",
+  "25kurus sifirla",
+  "50kurus sifirla",
+  "1 lira sifirla",
+  "Hepsini sifirla",
+  "Cikis"
+};
 
 void setup() {
   Serial.begin(9600);
@@ -47,38 +61,49 @@ void loop() {
   if (button2.isPressed()){
     n--;
   }
+
+  if (button3.isPressed()) {
+    menu();
+  }
   
   n = (n == 6) ? 0 : n;
   n = (n == -1) ? 5 : n;
 
-  besKurus = (besKurusVal < 100) ? besKurus + 1 : besKurus;
-  onKurus = (onKurusVal < 100) ? onKurus + 1 : onKurus;
-  yirmiBesKurus = (yirmiBesKurusVal < 100) ? yirmiBesKurus + 1 : yirmiBesKurus;
-  elliKurus = (elliKurusVal < 100) ? elliKurus + 1 : elliKurus;
-  birLira = (birLiraVal < 100) ? birLira + 1 : birLira;
-  
+  besKurus = (besKurusVal < 100) ? besKurus + 1 : EEPROM.read(0);
+  onKurus = (onKurusVal < 100) ? onKurus + 1 : EEPROM.read(1);
+  yirmiBesKurus = (yirmiBesKurusVal < 100) ? yirmiBesKurus + 1 : EEPROM.read(2);
+  elliKurus = (elliKurusVal < 100) ? elliKurus + 1 : EEPROM.read(3);
+  birLira = (birLiraVal < 100) ? birLira + 1 : EEPROM.read(4);
+
+  int myVals[5] = {besKurus, onKurus, yirmiBesKurus, elliKurus, birLira};
+  for (addr; addr < 5; addr++) {
+    EEPROM.write(addr, myVals[addr]);
+  }
+
+  addr = 0;
+
   switch (n) {
     case 1:
-      updateDisplay(besKurus, 5);
+      updateDisplay(EEPROM.read(0), 5);
       break;
     case 2:
-      updateDisplay(onKurus, 10);
+      updateDisplay(EEPROM.read(1), 10);
       break;
     case 3:
-      updateDisplay(yirmiBesKurus, 25);
+      updateDisplay(EEPROM.read(2), 25);
       break;
     case 4:
-      updateDisplay(elliKurus, 50);
+      updateDisplay(EEPROM.read(3), 50);
       break;
     case 5:
-      updateDisplay(birLira, 1);
+      updateDisplay(EEPROM.read(4), 1);
       break;
     default:
       lcd.clear();
       lcd.setCursor(0,0);
-      lcd.print("  Para Sayici");
+      lcd.print("   Para Sayici");
       lcd.setCursor(0,1);
-      lcd.print("  Toplam: ");
+      lcd.print("   Toplam: ");
       int toplam = besKurus + onKurus + yirmiBesKurus + elliKurus + birLira;
       lcd.print(toplam);
       break;
@@ -88,13 +113,163 @@ void loop() {
 }
 
 void updateDisplay(int val, int type) {
-   lcd.clear();
-   lcd.setCursor(0,0);
-   lcd.print(type);
-   if (type == 1) {
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print(type);
+  if (type == 1) {
     lcd.print(" lira: ");
-   } else {
+  } else {
     lcd.print(" kurus: ");
-   }
-   lcd.print(val);
+  }
+  lcd.print(val);
+}
+
+void menu() { 
+  int m = 0;
+  int y = 0;
+  while (m != -2) {
+    if (button1.isPressed()) {
+      y++;
+    }
+
+    if (button2.isPressed()) {
+      y--;
+    }
+
+    if (y == 0) {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print(" --Secenekler--");
+      lcd.setCursor(0, 1);
+      lcd.print(menuItem[0]);
+    }
+    
+    if (y == 1) {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print(">");
+      lcd.print(menuItem[0]);
+      lcd.setCursor(0, 1);
+      lcd.print(menuItem[1]);
+      if (button3.isPressed()) {
+        EEPROM.write(0, 0);
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("     5kurus");
+        lcd.setCursor(0,1);
+        lcd.print("   sifirlandi");
+        delay(2000);
+      }
+    }
+
+    if (y == 2) {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print(">");
+      lcd.print(menuItem[1]);
+      lcd.setCursor(0, 1);
+      lcd.print(menuItem[2]);
+      if (button3.isPressed()) {
+        EEPROM.write(1, 0);
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("     10kurus");
+        lcd.setCursor(0,1);
+        lcd.print("   sifirlandi");
+        delay(2000);
+      }
+    }
+
+    if (y == 3) {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print(">");
+      lcd.print(menuItem[2]);
+      lcd.setCursor(0, 1);
+      lcd.print(menuItem[3]);
+      if (button3.isPressed()) {
+        EEPROM.write(2, 0);
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("     25kurus");
+        lcd.setCursor(0,1);
+        lcd.print("   sifirlandi");
+        delay(2000);
+      }
+    }
+
+    if (y == 4) {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print(">");
+      lcd.print(menuItem[3]);
+      lcd.setCursor(0, 1);
+      lcd.print(menuItem[4]);
+      if (button3.isPressed()) {
+        EEPROM.write(3, 0);
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("     50kurus");
+        lcd.setCursor(0,1);
+        lcd.print("   sifirlandi");
+        delay(2000);
+      }
+    }
+
+    if (y == 5) {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print(">");
+      lcd.print(menuItem[4]);
+      lcd.setCursor(0, 1);
+      lcd.print(menuItem[5]);
+      if (button3.isPressed()) {
+        EEPROM.write(4, 0);
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("     1 lira");
+        lcd.setCursor(0,1);
+        lcd.print("   sifirlandi");
+        delay(2000);
+      }
+    }
+
+    if (y == 6) {
+      lcd.clear();
+      lcd.setCursor(0, 0); 
+      lcd.print(">");
+      lcd.print(menuItem[5]);
+      lcd.setCursor(0, 1);
+      lcd.print(menuItem[6]);
+      if (button3.isPressed()) {
+        EEPROM.write(0, 0);
+        EEPROM.write(1, 0);
+        EEPROM.write(2, 0);
+        EEPROM.write(3, 0);
+        EEPROM.write(4, 0);
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("  Tum paralar");
+        lcd.setCursor(0,1);
+        lcd.print("   sifirlandi");
+        delay(2000);
+      }
+    }
+
+    if (y == 7) {
+      lcd.clear();
+      lcd.setCursor(0, 0); 
+      lcd.print(menuItem[5]);
+      lcd.setCursor(0, 1);
+      lcd.print(">");
+      lcd.print(menuItem[6]);
+      if (button3.isPressed()) {
+        m = -2;
+      }
+    }
+
+     y = (y == 8) ? 0 : y;
+     y = (y == -1) ? 0 : y;
+     delay(100);
+    }
 }
