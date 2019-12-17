@@ -1,2 +1,2 @@
 # Coin Sorter
-Coin sorter for schools project
+Coin sorter for school project
