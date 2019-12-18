@@ -6,20 +6,20 @@
 #include <LiquidCrystal.h>
 #include <String.h>
 
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+#define COIN_PIN_1 A5
+#define COIN_PIN_2 A4
+#define COIN_PIN_3 A3
+#define COIN_PIN_4 A2
+#define COIN_PIN_5 A1
+#define BUTTON1_PIN 9
+#define BUTTON2_PIN 10
+#define BUTTON3_PIN 11
+#define GREEN_LED 12
+#define YELLOW_LED 13
+#define RED_LED A0
+#define MOTOR_PIN 2
 
-#define COIN_PIN_1 A0
-#define COIN_PIN_2 A1
-#define COIN_PIN_3 A2
-#define COIN_PIN_4 A3
-#define COIN_PIN_5 A4
-#define BUTTON1_PIN 7
-#define BUTTON2_PIN 8
-#define BUTTON3_PIN 9
-#define GREEN_LED 6
-#define YELLOW_LED 10
-#define RED_LED 13
-#define MOTOR_PIN A5
+LiquidCrystal lcd(3, 4, 5, 6, 7, 8);
 
 Coin coin1(COIN_PIN_1);
 Coin coin2(COIN_PIN_2);
@@ -132,7 +132,7 @@ void menu() {
     if (button1.isPressed()) {
       y++;
     }
-
+    
     if (button2.isPressed()) {
       y--;
     }
@@ -257,7 +257,7 @@ void menu() {
      y = (y == 10) ? 0 : y;
      y = (y == -1) ? 0 : y;
      delay(100);
-    }
+  }
 }
 
 void fullnessStates() {
@@ -307,19 +307,19 @@ void fullnessStates() {
     for (int i = 0; i < 5; i++) {
       if(fullStates[i] != 0) {
           lcd.setCursor(0, 0);
-      if (i == 4) {
-          lcd.print(fullStates[i] + String(" lira doldu"));
-      } else {
-          lcd.print(fullStates[i] + String(" kurus doldu"));
-      }
-      greenLed.off();
-      redLed.on();
-      while (q != -1) {
-        if (button3.isPressed()) {
-          n = 0;
-          q = -1;
+          if (i == 4) {
+            lcd.print(fullStates[i] + String(" lira doldu"));
+          } else {
+            lcd.print(fullStates[i] + String(" kurus doldu"));
           }
-        }
+          greenLed.off();
+          redLed.on();
+          while (q != -1) {
+            if (button3.isPressed()) {
+              n = 0;
+              q = -1;
+            }
+          }
       }
     }
   }
